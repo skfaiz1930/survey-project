@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PlusIcon, Trash2Icon, MoveUpIcon, MoveDownIcon } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import AIQuestionSuggestions from "@/components/pulse-survey/ai-question-suggestions"
 
 interface Question {
   id: string
@@ -34,6 +35,7 @@ export default function SurveyQuestions({ title, description, questions, updateD
   })
   const [errors, setErrors] = useState<{ text?: string; subtheme?: string }>({})
   const [activeTab, setActiveTab] = useState<string>("custom")
+  const [selectedSubtheme, setSelectedSubtheme] = useState<string>("communication")
 
   const subthemes = [
     { value: "communication", label: "Communication" },
@@ -105,7 +107,7 @@ export default function SurveyQuestions({ title, description, questions, updateD
       id: "",
       text: "",
       type: "likert",
-      subtheme: "communication",
+      subtheme: newQuestion.subtheme,
     })
     setErrors({})
   }
@@ -150,6 +152,19 @@ export default function SurveyQuestions({ title, description, questions, updateD
     })
   }
 
+  const handleAddAIQuestion = (question: { text: string; type: "likert" | "open"; subtheme: string }) => {
+    const questionToAdd = {
+      ...question,
+      id: Date.now().toString(),
+    }
+
+    updateData({
+      title,
+      description,
+      questions: [...questions, questionToAdd],
+    })
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -185,6 +200,7 @@ export default function SurveyQuestions({ title, description, questions, updateD
           <TabsList className="mb-4">
             <TabsTrigger value="custom">Custom Questions</TabsTrigger>
             <TabsTrigger value="templates">Question Templates</TabsTrigger>
+            <TabsTrigger value="ai">AI Suggestions</TabsTrigger>
           </TabsList>
 
           <TabsContent value="custom">
@@ -368,6 +384,30 @@ export default function SurveyQuestions({ title, description, questions, updateD
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="ai">
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <Label htmlFor="ai-subtheme" className="whitespace-nowrap">
+                  Select Subtheme:
+                </Label>
+                <Select value={selectedSubtheme} onValueChange={setSelectedSubtheme}>
+                  <SelectTrigger id="ai-subtheme" className="w-[200px]">
+                    <SelectValue placeholder="Select subtheme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subthemes.map((subtheme) => (
+                      <SelectItem key={subtheme.value} value={subtheme.value}>
+                        {subtheme.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <AIQuestionSuggestions subtheme={selectedSubtheme} onAddQuestion={handleAddAIQuestion} />
             </div>
           </TabsContent>
         </Tabs>

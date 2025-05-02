@@ -3,7 +3,8 @@
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { PlusIcon } from "lucide-react"
+import { PlusIcon, Mail } from "lucide-react"
+import Link from "next/link"
 import SurveyBuilder from "@/components/pulse-survey/survey-builder"
 import ActiveSurveys from "@/components/pulse-survey/active-surveys"
 import CompletedSurveys from "@/components/pulse-survey/completed-surveys"
@@ -18,7 +19,6 @@ export default function PulseSurveyDashboard() {
     setIsCreating(true)
   }
 
-  // Add error handling to the toast
   const handleSurveyCreated = () => {
     setIsCreating(false)
     setError(null)
@@ -28,7 +28,6 @@ export default function PulseSurveyDashboard() {
     })
   }
 
-  // Add error handling
   const handleError = (errorMessage: string) => {
     setError(errorMessage)
     toast({
@@ -50,10 +49,18 @@ export default function PulseSurveyDashboard() {
         <>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-[#1F2937]">Pulse Surveys</h2>
-            <Button onClick={handleCreateSurvey} className="bg-[#60A5FA] hover:bg-[#3B82F6] text-white">
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Create New Survey
-            </Button>
+            <div className="flex space-x-3">
+              <Link href="/dashboard/email-templates">
+                <Button variant="outline">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email Templates
+                </Button>
+              </Link>
+              <Button onClick={handleCreateSurvey} className="bg-[#60A5FA] hover:bg-[#3B82F6] text-white">
+                <PlusIcon className="h-4 w-4 mr-2" />
+                Create New Survey
+              </Button>
+            </div>
           </div>
 
           <Tabs defaultValue="active" className="w-full">
